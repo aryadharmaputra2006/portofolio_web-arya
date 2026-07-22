@@ -1,0 +1,47 @@
+/* ==========================================================================
+   VARIABLES & TOKEN COLOR ARCHITECTURE
+   ========================================================================== */
+
+:root {
+    /* Font Family */
+    --font-primary: 'Poppins', sans-serif;
+
+    /* Light Mode Palette */
+    --primary-color: #2563EB;
+    --secondary-color: #1E293B;
+    --accent-color: #38BDF8;
+    --bg-global: #F8FAFC;
+    --bg-surface: #FFFFFF;
+    --text-main: #0F172A;
+    --text-muted: #64748B;
+    --border-color: #E2E8F0;
+    
+    /* Glassmorphism Light */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-shadow: rgba(37, 99, 235, 0.05);
+
+    /* System Tokens */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --shadow-soft: 0 10px 30px -5px rgba(2, 6, 23, 0.05);
+}
+
+[data-theme="dark"] {
+    /* Dark Mode Palette */
+    --primary-color: #38BDF8;
+    --secondary-color: #F8FAFC;
+    --accent-color: #2563EB;
+    --bg-global: #0F172A;
+    --bg-surface: #1E293B;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --border-color: #334155;
+
+    /* Glassmorphism Dark */
+    --glass-bg: rgba(15, 23, 42, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: rgba(0, 0, 0, 0.3);
+}
