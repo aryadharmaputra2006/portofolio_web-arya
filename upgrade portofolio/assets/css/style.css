@@ -1,0 +1,952 @@
+/* ==========================================================================
+   1. CORE ARCHITECTURE & DESIGN SYSTEM (Vercel & Linear Inspired)
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Pure Light Mode Tokens */
+    --bg-main: #F8FAFC;
+    --bg-surface: rgba(255, 255, 255, 0.8);
+    --text-main: #0F172A;
+    --text-muted: #64748B;
+    --primary: #2563EB;
+    --accent: #38BDF8;
+    --border-premium: rgba(15, 23, 42, 0.06);
+    --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 12px 24px -4px rgba(15, 23, 42, 0.04);
+    --card-shadow-hover: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 20px 40px -8px rgba(37, 99, 235, 0.12);
+
+    /* Animation Physics (Apple Ease-Out) */
+    --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-smooth: all 0.5s var(--ease-premium);
+
+    /* Ambient Background Blob Opacity */
+    --blob-opacity-1: 0.35;
+    --blob-opacity-2: 0.28;
+    --grid-line: rgba(15, 23, 42, 0.035);
+}
+
+/* Cinematic Dark Mode Overrides */
+[data-theme="dark"] {
+    --bg-main: #050507;
+    --bg-surface: rgba(13, 13, 18, 0.7);
+    --text-main: #F8FAFC;
+    --text-muted: #8E9199;
+    --primary: #2563EB;
+    --accent: #38BDF8;
+    --border-premium: rgba(255, 255, 255, 0.07);
+    --card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+    --card-shadow-hover: 0 0 0 1px rgba(56, 189, 248, 0.2), 0 20px 40px -12px rgba(0, 0, 0, 0.9);
+
+    --blob-opacity-1: 0.55;
+    --blob-opacity-2: 0.4;
+    --grid-line: rgba(255, 255, 255, 0.035);
+}
+
+* { scroll-behavior: smooth; }
+
+body {
+    position: relative;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: var(--transition-smooth);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+
+    /* Dot-grid halus di seluruh halaman */
+    background-image: radial-gradient(var(--grid-line) 1px, transparent 1px);
+    background-size: 28px 28px;
+}
+
+/* ==========================================================================
+   1B. AMBIENT MESH BACKGROUND (Blob Gradient Melayang)
+   ========================================================================== */
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    z-index: -2;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    transition: opacity 0.6s var(--ease-premium);
+    will-change: transform;
+}
+
+body::before {
+    top: -12%;
+    left: -10%;
+    width: 55vw;
+    height: 55vw;
+    max-width: 700px;
+    max-height: 700px;
+    background: radial-gradient(circle, var(--primary), transparent 70%);
+    opacity: var(--blob-opacity-1);
+    animation: driftOne 22s ease-in-out infinite;
+}
+
+body::after {
+    bottom: -15%;
+    right: -12%;
+    width: 60vw;
+    height: 60vw;
+    max-width: 760px;
+    max-height: 760px;
+    background: radial-gradient(circle, var(--accent), transparent 70%);
+    opacity: var(--blob-opacity-2);
+    animation: driftTwo 26s ease-in-out infinite;
+}
+
+@keyframes driftOne {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(6%, 8%) scale(1.12); }
+}
+
+@keyframes driftTwo {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-6%, -6%) scale(1.1); }
+}
+
+/* Blob tambahan khusus dark mode agar lebih hidup */
+[data-theme="dark"] body {
+    background-image:
+        radial-gradient(var(--grid-line) 1px, transparent 1px),
+        radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.08), transparent 60%);
+    background-size: 28px 28px, 100% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before, body::after { animation: none; }
+}
+
+/* Grain/Noise Overlay Premium (mengurangi kesan "polos" pada gradient) */
+html::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+[data-theme="dark"] html::after { opacity: 0.05; }
+
+section { padding: 140px 0; position: relative; }
+
+/* Selang-seling tint sangat halus antar section agar background tidak flat */
+section:nth-of-type(even) {
+    background-image: linear-gradient(180deg, transparent, rgba(37, 99, 235, 0.025) 50%, transparent);
+}
+
+[data-theme="dark"] section:nth-of-type(even) {
+    background-image: linear-gradient(180deg, transparent, rgba(56, 189, 248, 0.03) 50%, transparent);
+}
+
+::selection { background: var(--primary); color: #fff; }
+
+/* Scrollbar Kustom Premium */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--primary), var(--accent));
+    border-radius: 10px;
+}
+
+/* ==========================================================================
+   2. LUXURY TYPOGRAPHY SYSTEM
+   ========================================================================== */
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-main);
+    letter-spacing: -0.03em !important;
+    font-weight: 700;
+}
+
+p, .text-muted, .portfolio-desc, ul li {
+    color: var(--text-muted) !important;
+    font-weight: 400;
+    line-height: 1.75;
+}
+
+.section-title {
+    font-size: 2.75rem;
+    position: relative;
+    margin-bottom: 70px;
+    text-align: center;
+    background: linear-gradient(120deg, var(--text-main) 30%, var(--primary) 60%, var(--accent) 85%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    width: 100%;
+    animation: titleShine 6s ease-in-out infinite;
+}
+
+@keyframes titleShine {
+    0%, 100% { background-position: 0% center; }
+    50% { background-position: 100% center; }
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -18px;
+    transform: translateX(-50%);
+    width: 64px;
+    height: 4px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+/* Nama di Hero — gradient text yang lebih kuat sebagai focal point utama */
+.hero-section h1.display-4 {
+    background: linear-gradient(100deg, var(--text-main) 20%, var(--primary) 55%, var(--accent) 80%);
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleShine 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .section-title, .hero-section h1.display-4 { animation: none; }
+}
+
+
+/* ==========================================================================
+   3. PRELOADER
+   ========================================================================== */
+#preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: var(--bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s var(--ease-premium), visibility 0.6s var(--ease-premium);
+    /* PENGAMAN: kalau karena suatu hal JS gagal total dan tidak sempat
+       menambahkan class .fade-out, preloader tetap otomatis hilang
+       sendiri lewat animasi CSS murni ini setelah beberapa detik. */
+    animation: forceHidePreloader 0.6s ease-out 4s forwards;
+}
+
+@keyframes forceHidePreloader {
+    to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+
+#preloader.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.spinner-custom {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 3px solid var(--border-premium);
+    border-top-color: var(--primary);
+    border-right-color: var(--accent);
+    animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ==========================================================================
+   4. THE GLASS NAVIGATOR
+   ========================================================================== */
+.navbar-custom {
+    background: transparent;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    border-bottom: 1px solid transparent;
+    padding: 24px 0;
+    transition: var(--transition-smooth);
+}
+
+.navbar-custom.scrolled {
+    background: var(--bg-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-premium);
+    padding: 14px 0;
+    box-shadow: var(--card-shadow);
+}
+
+.navbar-custom .nav-link {
+    color: var(--text-main) !important;
+    font-size: 0.92rem;
+    font-weight: 500;
+    opacity: 0.75;
+    position: relative;
+    transition: var(--transition-smooth);
+}
+
+.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link.active {
+    opacity: 1;
+    color: var(--primary) !important;
+}
+
+[data-theme="dark"] .navbar-custom .nav-link:hover,
+[data-theme="dark"] .navbar-custom .nav-link.active {
+    color: var(--accent) !important;
+}
+
+.navbar-toggler:focus { box-shadow: none; }
+
+[data-theme="dark"] .navbar-toggler-icon {
+    filter: invert(1) brightness(2);
+}
+
+/* ==========================================================================
+   5. HERO SECTION
+   ========================================================================== */
+.hero-section {
+    padding: 200px 0 140px 0;
+    background: radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.06), transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.06), transparent 50%);
+    position: relative;
+}
+
+.hero-img-wrapper {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    animation: photoFloat 5s ease-in-out infinite;
+    perspective: 800px;
+}
+
+@keyframes photoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+}
+
+/* Ring gradient berputar mengelilingi foto */
+.hero-img-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--primary), var(--accent), var(--primary));
+    z-index: -1;
+    opacity: 0.55;
+    filter: blur(2px);
+    animation: ringSpin 6s linear infinite;
+}
+
+/* Glow lembut di belakang ring */
+.hero-img-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -26px;
+    background: radial-gradient(circle, var(--primary), transparent 65%);
+    border-radius: 50%;
+    z-index: -2;
+    opacity: 0.22;
+    filter: blur(28px);
+    transition: var(--transition-smooth);
+    animation: pulseGlow 4s ease-in-out infinite;
+}
+
+@keyframes ringSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.18; }
+    50% { opacity: 0.36; }
+}
+
+.hero-img-wrapper:hover::after {
+    opacity: 0.45;
+    filter: blur(32px);
+}
+
+.hero-img-wrapper img {
+    position: relative;
+    border: 4px solid var(--bg-surface);
+    transition: var(--transition-smooth);
+    transform-style: preserve-3d;
+}
+
+.hero-img-wrapper:hover img {
+    transform: scale(1.04) rotateY(6deg) rotateX(3deg);
+}
+
+/* Shine sweep — kilau lembut melintas di atas foto */
+.hero-img-wrapper {
+    isolation: isolate;
+}
+
+.hero-img-wrapper img {
+    position: relative;
+}
+
+.hero-img-wrapper img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(75deg, transparent 40%, rgba(255, 255, 255, 0.4) 50%, transparent 60%);
+    background-size: 300% 300%;
+    background-position: -100% -100%;
+    animation: shineSweep 5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes shineSweep {
+    0%, 30% { background-position: -100% -100%; }
+    70%, 100% { background-position: 100% 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-img-wrapper,
+    .hero-img-wrapper::before,
+    .hero-img-wrapper::after,
+    .hero-img-wrapper img::after { animation: none; }
+}
+
+/* Kursor blink sudah otomatis dari Typed.js (.typed-cursor),
+   jadi TIDAK perlu tambahan border-right di sini — itu tadi
+   penyebab kursor tampil dobel ("||") dan teks terlihat glitch. */
+#typed-text { display: inline-block; }
+
+.typed-cursor {
+    color: var(--primary);
+    font-weight: 400;
+    animation: typedBlink 0.9s infinite;
+}
+
+@keyframes typedBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* ==========================================================================
+   6. UNIFIED PREMIUM CARD SYSTEM
+   ========================================================================== */
+.glass-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-premium) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--card-shadow) !important;
+    transition: var(--transition-smooth) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: var(--card-shadow-hover) !important;
+}
+
+/* Counter Number (About) */
+.counter-num { transition: var(--transition-smooth); }
+#achievements .glass-card:hover .counter-num { color: var(--accent) !important; }
+
+/* Skill Icon Box */
+.skill-icon-box {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    font-size: 1.6rem;
+    color: var(--primary);
+    background: rgba(37, 99, 235, 0.08);
+    transition: var(--transition-smooth);
+}
+
+.glass-card:hover .skill-icon-box {
+    background: var(--primary);
+    color: #fff;
+    transform: rotate(-8deg) scale(1.08);
+}
+
+[data-theme="dark"] .skill-icon-box { background: rgba(56, 189, 248, 0.08); color: var(--accent); }
+[data-theme="dark"] .glass-card:hover .skill-icon-box { background: var(--accent); color: #050507; }
+
+/* Portfolio & Image Display */
+.portfolio-img-zoom {
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid var(--border-premium);
+}
+
+.portfolio-img-zoom img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-smooth);
+}
+
+.glass-card:hover .portfolio-img-zoom img { transform: scale(1.06); }
+
+/* Cover berbasis ikon untuk project tanpa screenshot (mis. project jaringan) */
+.portfolio-icon-cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    color: var(--primary);
+    background: radial-gradient(circle at 30% 30%, rgba(37, 99, 235, 0.12), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(56, 189, 248, 0.1), transparent 60%);
+}
+
+.glass-card:hover .portfolio-icon-cover {
+    color: var(--accent);
+    transform: none;
+}
+
+.glass-card:hover .portfolio-icon-cover i {
+    transform: scale(1.15) rotate(-6deg);
+    transition: var(--transition-smooth);
+}
+
+.portfolio-tag {
+    display: inline-block;
+    padding: 5px 14px;
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--primary) !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 100px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+}
+
+[data-theme="dark"] .portfolio-tag {
+    background: rgba(56, 189, 248, 0.06);
+    color: var(--accent) !important;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+/* Portfolio Filter Buttons */
+.filter-btn {
+    padding: 10px 24px;
+    border-radius: 100px;
+    border: 1px solid var(--border-premium);
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+}
+
+.filter-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.filter-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff !important;
+    box-shadow: 0 10px 20px -6px rgba(37, 99, 235, 0.4);
+}
+
+.portfolio-item { transition: var(--transition-smooth); }
+.portfolio-item.hide {
+    display: none !important;
+}
+
+/* ==========================================================================
+   7. TIMELINE & EDUCATION
+   ========================================================================== */
+.timeline-container {
+    position: relative;
+    padding-left: 40px;
+    border-left: 2px solid var(--border-premium);
+}
+
+.timeline-item { position: relative; margin-bottom: 60px; }
+.timeline-item:last-child { margin-bottom: 0; }
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -50px;
+    top: 6px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bg-main);
+    border: 3px solid var(--primary);
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+    transition: var(--transition-smooth);
+}
+
+.timeline-item:hover::before {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent);
+    transform: scale(1.2);
+}
+
+.timeline-title { font-size: 1.15rem; }
+.timeline-org { text-transform: uppercase; letter-spacing: 0.04em !important; }
+
+#education .glass-card { transition: var(--transition-smooth) !important; }
+#education .glass-card:hover { border-color: var(--primary) !important; }
+
+/* ==========================================================================
+   8. FORM CONTROLS
+   ========================================================================== */
+.form-control {
+    height: 56px;
+    border-radius: 16px !important;
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-premium) !important;
+    color: var(--text-main) !important;
+    padding: 0 20px;
+    font-size: 0.95rem;
+    transition: var(--transition-smooth);
+}
+
+textarea.form-control { height: auto; padding: 20px; }
+
+.form-control::placeholder { color: var(--text-muted) !important; opacity: 0.5; }
+
+.form-control:focus {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12) !important;
+    border-color: var(--primary) !important;
+}
+
+[data-theme="dark"] .form-control:focus {
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15) !important;
+    border-color: var(--accent) !important;
+}
+
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+    background: var(--primary);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 28px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    transition: var(--transition-smooth);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+    transform: translateX(-120%);
+    transition: transform 0.6s var(--ease-premium);
+}
+
+.btn-primary:hover::before { transform: translateX(120%); }
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -6px rgba(37, 99, 235, 0.4);
+    background: var(--primary);
+}
+
+.btn-primary:active { transform: translateY(-1px) scale(0.98); }
+
+.btn-outline-primary {
+    border-radius: 12px;
+    border-width: 1.5px;
+    padding: 14px 28px;
+    font-weight: 600;
+    transition: var(--transition-smooth);
+}
+
+.btn-outline-primary:hover {
+    transform: translateY(-3px);
+    background: var(--primary);
+    box-shadow: 0 12px 24px -6px rgba(37, 99, 235, 0.3);
+}
+
+.btn-outline-primary:active { transform: translateY(-1px) scale(0.98); }
+
+/* ==========================================================================
+   9. INTERACTIVE CORE WIDGETS
+   ========================================================================== */
+#scroll-progress {
+    position: fixed;
+    top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    z-index: 9999;
+    width: 0%;
+}
+
+#theme-toggle {
+    color: var(--text-main) !important;
+    opacity: 0.8;
+    transition: var(--transition-smooth);
+}
+
+#theme-toggle:hover { opacity: 1; transform: scale(1.15) rotate(20deg); }
+
+/* Nav link underline sliding */
+.navbar-custom .nav-link {
+    position: relative;
+}
+
+.navbar-custom .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transition: var(--transition-smooth);
+    transform: translateX(-50%);
+}
+
+.navbar-custom .nav-link:hover::after,
+.navbar-custom .nav-link.active::after { width: 70%; }
+
+/* Contact Social Icons */
+#contact .fab, #contact .fas { color: var(--text-main); transition: var(--transition-smooth); display: inline-block; }
+#contact a:hover .fab, #contact a:hover .fas { color: var(--primary) !important; transform: translateY(-4px) rotate(-8deg) scale(1.15); }
+
+/* Badge micro hover */
+.badge { transition: var(--transition-smooth); }
+.glass-card:hover .badge { transform: scale(1.05); }
+
+/* Portfolio card hover lift jadi lebih terasa */
+.portfolio-item .glass-card:hover { transform: translateY(-10px) scale(1.015); }
+
+/* WhatsApp Floating Button */
+.whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #25D366;
+    color: #fff !important;
+    font-size: 1.6rem;
+    border-radius: 50%;
+    box-shadow: 0 10px 25px -6px rgba(37, 211, 102, 0.5);
+    z-index: 999;
+    transition: var(--transition-smooth);
+    animation: floatBounce 3s ease-in-out infinite;
+}
+
+.whatsapp-float:hover {
+    color: #fff !important;
+    transform: scale(1.1) translateY(-4px);
+}
+
+@keyframes floatBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* Back To Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    box-shadow: var(--card-shadow-hover);
+    transition: var(--transition-smooth);
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Certificate Modal */
+.modal-content { border-radius: 20px !important; overflow: hidden; }
+#modalCertImage { border-radius: 12px; max-height: 70vh; object-fit: contain; }
+
+/* Footer */
+footer {
+    position: relative;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-premium);
+    overflow: hidden;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+    background-size: 200% auto;
+    animation: titleShine 6s linear infinite;
+}
+
+/* AOS Fallback smoothness */
+[data-aos] { transition-timing-function: var(--ease-premium) !important; }
+
+/* ==========================================================================
+   10. FLOATING SHAPE DECORATION PER SECTION
+   ========================================================================== */
+#about::before,
+#skills::before,
+#experience::before,
+#certificates::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    border-radius: 50%;
+    filter: blur(50px);
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+#about::before {
+    top: 10%; right: 4%;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, var(--accent), transparent 70%);
+    animation: shapeFloatA 9s ease-in-out infinite;
+}
+
+#skills::before {
+    bottom: 8%; left: 3%;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, var(--primary), transparent 70%);
+    animation: shapeFloatB 11s ease-in-out infinite;
+}
+
+#experience::before {
+    top: 6%; left: 6%;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, var(--accent), transparent 70%);
+    animation: shapeFloatA 10s ease-in-out infinite;
+}
+
+#certificates::before {
+    bottom: 10%; right: 5%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, var(--primary), transparent 70%);
+    animation: shapeFloatB 8s ease-in-out infinite;
+}
+
+#about, #skills, #experience, #certificates { overflow: hidden; }
+#about > .container, #skills > .container, #experience > .container, #certificates > .container {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes shapeFloatA {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-18px, 20px); }
+}
+
+@keyframes shapeFloatB {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(20px, -18px); }
+}
+
+@media (max-width: 767.98px) {
+    #about::before, #skills::before, #experience::before, #certificates::before {
+        width: 120px !important; height: 120px !important;
+        filter: blur(36px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #about::before, #skills::before, #experience::before, #certificates::before { animation: none; }
+}
+
+/* ==========================================================================
+   11. PARTICLE CANVAS (di-generate lewat JS, lihat animation.js)
+   ========================================================================== */
+#particle-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   12. CUSTOM CURSOR (elemen di-generate lewat JS, lihat animation.js)
+   ========================================================================== */
+@media (hover: hover) and (pointer: fine) {
+    body.custom-cursor-active { cursor: none; }
+    body.custom-cursor-active a,
+    body.custom-cursor-active button,
+    body.custom-cursor-active .filter-btn { cursor: none; }
+}
+
+.cursor-dot,
+.cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+    pointer-events: none;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    will-change: transform;
+}
+
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    transition: transform 0.15s var(--ease-premium), background 0.3s;
+}
+
+.cursor-ring {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid var(--primary);
+    opacity: 0.6;
+    transition: transform 0.25s var(--ease-premium), width 0.25s, height 0.25s, opacity 0.25s;
+}
+
+body.cursor-hover .cursor-ring {
+    width: 54px;
+    height: 54px;
+    opacity: 0.9;
+    background: rgba(37, 99, 235, 0.08);
+}
+
+body.cursor-hover .cursor-dot { transform: translate(-50%, -50%) scale(0.6); }
+
+@media (max-width: 991.98px), (hover: none) {
+    .cursor-dot, .cursor-ring { display: none; }
+}
+/* Mencegah duplikasi elemen kursor Typed.js */
+.typed-cursor ~ .typed-cursor {
+    display: none !important;
+}
+
+/* Jika sebelumnya Anda membuat kursor manual dengan ::after pada #typed-text, sembunyikan agar tidak ganda */
+#typed-text::after {
+    content: none !important;
+}
